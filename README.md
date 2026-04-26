@@ -213,8 +213,26 @@ mcp-probe/
 │   ├── tests/          # generated prompts per tool (created by generate)
 │   ├── runs/           # run results (created by run)
 │   └── report.md       # final report (created by score)
+├── .claude/
+│   └── skills/
+│       └── mcp-probe/
+│           └── SKILL.md  # Claude Code skill definition
+├── .github/
+│   └── skills/
+│       └── mcp-probe/
+│           └── SKILL.md  # GitHub Copilot skill definition
 └── package.json
 ```
+
+## AI assistant integration
+
+### Claude Code
+
+Type `/mcp-probe` in Claude Code — it will guide you through the full pipeline interactively.
+
+### GitHub Copilot (VS Code)
+
+Type `#` in the Copilot Chat input and select `mcp-probe` from the dropdown.
 
 ---
 
