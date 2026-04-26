@@ -1,10 +1,31 @@
 # mcp-probe
 
-**mcp-probe** evaluates how well an LLM selects the right tool from an MCP server. It auto-generates test prompts, runs them against the model, and produces an accuracy report with suggestions for improving tool descriptions.
+> **Your MCP tool works with GPT-4o. But does it work with Claude? With Llama? With the model your users actually run?**
+
+MCP tool descriptions are code. They tell the model when to call your tool, with what arguments, and why — not you. If the description is weak, the tool gets ignored or misused, regardless of how good the implementation is.
+
+**mcp-probe** stress-tests your tool descriptions across any LLM. It generates adversarial prompts, measures selection accuracy per model, and tells you exactly which descriptions to fix — and how.
 
 ```
 discover → generate → run → score
 ```
+
+---
+
+## The core insight
+
+When you build an MCP server, you write descriptions once but they run on every model your users have. A description tuned for GPT-4o might silently fail on Claude 3.5 or Llama 3.
+
+```bash
+# Test the same tool descriptions against three different models
+LLM_MODEL=gpt-4o-mini   npm run run -- --mcp http://localhost:3000/mcp
+LLM_MODEL=llama3        npm run run -- --mcp http://localhost:3000/mcp
+LLM_MODEL=qwen3-32b     npm run run -- --mcp http://localhost:3000/mcp
+```
+
+Run `score` after each. Compare the reports. The gaps show you exactly where your descriptions are model-specific rather than robust.
+
+**Intentionally use a weaker model for testing.** If a small model can't pick your tool correctly, neither can your users on resource-constrained setups. A description that only works on frontier models is a description that needs work.
 
 ---
 
@@ -23,6 +44,8 @@ discover → generate → run → score
 - **indirect** — user describes a situation; the right tool must be inferred
 - **adversarial** — ambiguous wording that could match a similar tool
 
+> Generate prompts once with your best model. Run and score across as many models as you want — the test set stays fixed, results are comparable.
+
 ---
 
 ## Prerequisites
@@ -36,7 +59,7 @@ discover → generate → run → score
 ## Installation
 
 ```bash
-git clone https://github.com/your-org/mcp-probe
+git clone https://github.com/turkyilmazomer/mcp-probe
 cd mcp-probe
 npm install
 ```
@@ -45,13 +68,11 @@ npm install
 
 ## Configuration
 
-Set these environment variables before running (or add them to a `.env` file — just don't commit it):
-
 | Variable | Required | Description |
 |---|---|---|
 | `LLM_URL` | yes | Base URL of an OpenAI-compatible API (e.g. `https://api.openai.com/v1`) |
-| `LLM_MODEL` | yes | Model name to use (e.g. `gpt-4o`, `claude-3-5-sonnet`, `llama3`) |
-| `LLM_KEY` | no | API key — omit if your endpoint doesn't need one (e.g. local Ollama) |
+| `LLM_MODEL` | yes | Model name (e.g. `gpt-4o`, `claude-3-5-sonnet`, `llama3`) |
+| `LLM_KEY` | no | API key — omit for local models (Ollama, etc.) |
 | `MCP_URL` | no | MCP server endpoint — can also be passed with `--mcp` per command |
 
 ```bash
@@ -67,13 +88,9 @@ export MCP_URL=http://localhost:3000/mcp
 
 ### Step 1 — discover
 
-Fetch all tools from the MCP server and save their names, descriptions, and schemas.
-
 ```bash
 npm run discover -- --mcp http://localhost:3000/mcp
 ```
-
-Output:
 
 ```
 Found 6 tools:
@@ -86,22 +103,17 @@ Found 6 tools:
 → data/tools.json
 ```
 
----
-
 ### Step 2 — generate
 
-Generate test prompts for every tool using the LLM. Use `--n` to control how many prompts per category (default: 3, so 9 prompts per tool).
+Generate test prompts with your strongest model. You only need to do this once.
 
 ```bash
-npm run generate -- --n 5
+LLM_MODEL=gpt-4o npm run generate -- --n 5
 ```
-
-Output:
 
 ```
 Generating prompts for get_weather... ok
 Generating prompts for search_flights... ok
-Generating prompts for book_hotel... ok
 ```
 
 Each tool gets a file like `data/tests/get_weather.json`:
@@ -114,17 +126,13 @@ Each tool gets a file like `data/tests/get_weather.json`:
 ]
 ```
 
----
-
 ### Step 3 — run
 
-Send every prompt to the LLM with tool-calling enabled and record which tool was selected.
+Send every prompt to the model under test. Swap `LLM_MODEL` to test a different model — no need to regenerate prompts.
 
 ```bash
-npm run run -- --mcp http://localhost:3000/mcp
+LLM_MODEL=gpt-4o-mini npm run run -- --mcp http://localhost:3000/mcp
 ```
-
-Output (`.` = correct, `x` = wrong tool, `!` = error):
 
 ```
   get_weather (15 prompts) ...........xx..
@@ -133,17 +141,13 @@ Output (`.` = correct, `x` = wrong tool, `!` = error):
 → data/runs/latest.json (45 results)
 ```
 
----
+`.` = correct &nbsp; `x` = wrong tool &nbsp; `!` = error
 
 ### Step 4 — score
-
-Compute accuracy, find confusion patterns, and get LLM-generated suggestions for fixing weak tool descriptions.
 
 ```bash
 npm run score
 ```
-
-Output:
 
 ```
 → data/report.md
@@ -154,7 +158,6 @@ Overall: 41/45 (%91)
 
 ```markdown
 # MCP Tool Eval Report
-Generated: 26.04.2026 14:32:00
 
 **Overall selection accuracy: 41/45 (%91)**
 
@@ -177,26 +180,35 @@ Failed prompts:
 
 ---
 
-## Full example (end to end)
+## Cross-model workflow
 
 ```bash
-# 1. Start your MCP server (example: a local dev server)
-node my-mcp-server.js &
+# Generate prompts once with your best model
+LLM_MODEL=gpt-4o npm run generate -- --n 5
 
-# 2. Set env vars
-export LLM_URL=https://api.openai.com/v1
-export LLM_MODEL=gpt-4o-mini
-export LLM_KEY=sk-...
-
-# 3. Run the full pipeline
-npm run discover -- --mcp http://localhost:3000/mcp
-npm run generate -- --n 3
-npm run run     -- --mcp http://localhost:3000/mcp
-npm run score
-
-# 4. Read the report
-open data/report.md
+# Test against multiple models
+for MODEL in gpt-4o-mini llama3 qwen3-32b; do
+  LLM_MODEL=$MODEL npm run run -- --mcp http://localhost:3000/mcp
+  LLM_MODEL=$MODEL npm run score
+  cp data/report.md data/report-$MODEL.md
+done
 ```
+
+Compare `report-gpt-4o-mini.md`, `report-llama3.md`, `report-qwen3-32b.md` side by side. Tools that fail only on smaller models need clearer, more explicit descriptions. Tools that fail everywhere need a rewrite.
+
+---
+
+## Iteration
+
+After fixing a description in your MCP server:
+
+```bash
+npm run discover -- --mcp http://localhost:3000/mcp  # pick up new descriptions
+npm run run     -- --mcp http://localhost:3000/mcp  # same test set, fresh results
+npm run score                                        # compare with previous report
+```
+
+Re-run `generate` only when you add new tools or want to refresh the test set.
 
 ---
 
@@ -205,22 +217,17 @@ open data/report.md
 ```
 mcp-probe/
 ├── src/
-│   ├── index.ts        # CLI entry point and command implementations
+│   ├── index.ts        # CLI entry point and pipeline commands
 │   ├── mcp-client.ts   # MCP HTTP client (Streamable HTTP + SSE)
 │   └── llm-client.ts   # OpenAI-compatible LLM client with tool calling
 ├── data/
-│   ├── tools.json      # discovered tools (created by discover)
 │   ├── tests/          # generated prompts per tool (created by generate)
 │   ├── runs/           # run results (created by run)
-│   └── report.md       # final report (created by score)
+│   └── tools.json      # discovered tools (created by discover)
 ├── .claude/
-│   └── skills/
-│       └── mcp-probe/
-│           └── SKILL.md  # Claude Code skill definition
+│   └── skills/mcp-probe/SKILL.md   # Claude Code skill
 ├── .github/
-│   └── skills/
-│       └── mcp-probe/
-│           └── SKILL.md  # GitHub Copilot skill definition
+│   └── skills/mcp-probe/SKILL.md   # GitHub Copilot skill
 └── package.json
 ```
 
@@ -228,20 +235,11 @@ mcp-probe/
 
 ### Claude Code
 
-Type `/mcp-probe` in Claude Code — it will guide you through the full pipeline interactively.
+Type `/mcp-probe` — Claude will ask for your MCP URL and LLM config, then run the full pipeline interactively.
 
 ### GitHub Copilot (VS Code)
 
-Type `#` in the Copilot Chat input and select `mcp-probe` from the dropdown.
-
----
-
-## Tips
-
-- **Re-run just `score`** after editing tool descriptions in your MCP server — no need to re-generate or re-run.
-- **Increase `--n`** for more thorough evaluation; `--n 10` gives 30 prompts per tool.
-- **Use a weaker model** for `generate` and `run` to find description weaknesses a strong model would overlook.
-- The report's "Description suggestions" section is generated by the LLM — treat it as a starting point, not a prescription.
+Type `#` in Copilot Chat and select `mcp-probe` from the dropdown.
 
 ---
 
