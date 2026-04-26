@@ -1,0 +1,16 @@
+{
+  "name": "mcp-probe",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "discover": "tsx src/index.ts discover",
+    "generate": "tsx src/index.ts generate",
+    "run":      "tsx src/index.ts run",
+    "score":    "tsx src/index.ts score"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0"
+  }
+}

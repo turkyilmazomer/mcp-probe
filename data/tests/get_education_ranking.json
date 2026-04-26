@@ -1,0 +1,47 @@
+[
+  {
+    "category": "direct",
+    "prompt": "2023 yılında üniversite mezun oranı en yüksek ve en düşük illeri öğrenmek istiyorum.",
+    "expected_args": {"year": 2023}
+  },
+  {
+    "category": "direct",
+    "prompt": "Please provide the ranking of cities based on university graduation rates for the year 2022.",
+    "expected_args": {"year": 2022}
+  },
+  {
+    "category": "direct",
+    "prompt": "Hangi ilde eğitim seviyesi 2020'de en yüksekti?",
+    "expected_args": {"year": 2020}
+  },
+  {
+    "category": "indirect",
+    "prompt": "Son yıllarda hangi şehirler eğitim açısından daha ileride merak ediyorum.",
+    "expected_args": {"year": 2023}
+  },
+  {
+    "category": "indirect",
+    "prompt": "Geçen yıl hangi illerde üniversite mezunları daha fazlaydı?",
+    "expected_args": {"year": 2022}
+  },
+  {
+    "category": "indirect",
+    "prompt": "Eğitim seviyesinin iyi olduğu yerleri araştırmak istiyorum, 2021 için bir liste var mı?",
+    "expected_args": {"year": 2021}
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Eğitim kalitesini gösteren bir sıralama var mı? Özellikle 2020'yi merak ediyorum.",
+    "expected_args": {"year": 2020}
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Şehirlerde eğitim imkanları 2023 yılında nasıldı?",
+    "expected_args": {"year": 2023}
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Geçmişte hangi illerde daha çok eğitim fırsatı vardı?",
+    "expected_args": {"year": 2021}
+  }
+]

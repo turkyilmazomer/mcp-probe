@@ -1,0 +1,11 @@
+[
+  {"category":"direct","prompt":"En son Türkiye işsizlik oranını öğrenmek istiyorum.","expected_args":{}},
+  {"category":"direct","prompt":"Can you provide the latest unemployment statistics for Türkiye?","expected_args":{}},
+  {"category":"direct","prompt":"Türkiye'nin işsizlik verilerini güncel olarak alabilir miyim?","expected_args":{}},
+  {"category":"indirect","prompt":"Ekonomik rapor için Türkiye’deki iş piyasası hakkında en yeni verileri bulmam gerekiyor.","expected_args":{}},
+  {"category":"indirect","prompt":"Türkiye'deki işsizlik durumunu takip etmek istiyorum. Son dönem bilgilerini nerede bulabilirim?","expected_args":{}},
+  {"category":"indirect","prompt":"I am preparing a report on youth employment in Turkey. Where can I find the most recent data?","expected_args":{}},
+  {"category":"adversarial","prompt":"Türkiye'deki iş dünyası hakkında en güncel sayılar nelerdir?","expected_args":{}},
+  {"category":"adversarial","prompt":"Can you update me on the latest labor market trends in Türkiye?","expected_args":{}},
+  {"category":"adversarial","prompt":"Türkiye'nin ekonomik performansını görmek istiyorum, son iş gücü istatistikleri nedir?","expected_args":{}}
+]

@@ -1,0 +1,11 @@
+[
+  {"category":"direct","prompt":"2023 yılı Mart ayına ait Türkiye'nin işsizlik verilerini bana getirir misin?","expected_args":{"year":2023,"month":3}},
+  {"category":"direct","prompt":"Can you provide unemployment data for Turkey in June 2022?","expected_args":{"year":2022,"month":6}},
+  {"category":"direct","prompt":"İşsizlik oranlarını öğrenmek istiyorum. 2021 Kasım ayı bilgilerine ulaşabilir misiniz?","expected_args":{"year":2021,"month":11}},
+  {"category":"indirect","prompt":"Bu yılın şubat ayında işsizlik durumları nasıldı? Türkiye için genel bir bilgiye ihtiyacım var.","expected_args":{"year":2023,"month":2}},
+  {"category":"indirect","prompt":"Geçen yaz aylarında işsizlik oranları nasıldı acaba? Haziran verilerini kontrol edebilir misiniz?","expected_args":{"year":2023,"month":6}},
+  {"category":"indirect","prompt":"Türkiye'nin geçen yılın sonbahar aylarındaki iş gücü durumu nasıldı merak ediyorum. Mesela Ekim ayı için bilgi alabilir miyiz?","expected_args":{"year":2022,"month":10}},
+  {"category":"adversarial","prompt":"O yılın ilk ayındaki işsizlik oranları ve istihdam hakkında bilgi verir misin?","expected_args":{"year":2023,"month":1}},
+  {"category":"adversarial","prompt":"Geçen yılın üçüncü çeyreğinde işsizlik nasıl seyretti? Belki Ağustos verileri iyi bir gösterge olabilir.","expected_args":{"year":2022,"month":8}},
+  {"category":"adversarial","prompt":"Can you tell me about the employment scene in spring of last year? How was April looking?","expected_args":{"year":2022,"month":4}}
+]

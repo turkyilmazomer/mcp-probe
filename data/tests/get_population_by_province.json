@@ -1,0 +1,47 @@
+[
+  {
+    "category": "direct",
+    "prompt": "Lütfen Ankara'nın nüfusunu getir.",
+    "expected_args": {"province": "Ankara"}
+  },
+  {
+    "category": "direct",
+    "prompt": "İzmir'in ne kadar nüfusu var?",
+    "expected_args": {"province": "İzmir"}
+  },
+  {
+    "category": "direct",
+    "prompt": "İstanbul'un nüfus bilgisini verir misin?",
+    "expected_args": {"province": "İstanbul"}
+  },
+  {
+    "category": "indirect",
+    "prompt": "Yeni taşındığım için Muğla'nın nüfusunu bilmek istiyorum.",
+    "expected_args": {"province": "Muğla"}
+  },
+  {
+    "category": "indirect",
+    "prompt": "Ailemle Sakarya'ya taşınmayı düşünüyoruz, nüfusu nedir?",
+    "expected_args": {"province": "Sakarya"}
+  },
+  {
+    "category": "indirect",
+    "prompt": "Bir sunum için Mersin'in demografik bilgilerine ihtiyacım var.",
+    "expected_args": {"province": "Mersin"}
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Hangi şehir en kalabalık Türkiye'de, acaba Ankara'nın nüfusu ne kadar?",
+    "expected_args": {"province": "Ankara"}
+  },
+  {
+    "category": "adversarial",
+    "prompt": "İstanbul'un hava durumu nedir ve nüfusu ne kadar?",
+    "expected_args": {"province": "İstanbul"}
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Türkiye'de hangi şehirlerin nüfusu yüksek? İzmir nüfusu nedir?",
+    "expected_args": {"province": "İzmir"}
+  }
+]

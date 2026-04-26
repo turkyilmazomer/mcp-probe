@@ -1,0 +1,65 @@
+[
+  {
+    "category": "direct",
+    "prompt": "Lütfen Ankara'nın eğitim istatistiklerini getir.",
+    "expected_args": {
+      "province": "Ankara"
+    }
+  },
+  {
+    "category": "direct",
+    "prompt": "Ben Diyarbakır için okuryazarlık oranını öğrenmek istiyorum.",
+    "expected_args": {
+      "province": "Diyarbakır"
+    }
+  },
+  {
+    "category": "direct",
+    "prompt": "Şanlıurfa'daki eğitim seviyeleri hakkında bilgi verir misin?",
+    "expected_args": {
+      "province": "Şanlıurfa"
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Ege Bölgesi'nde bir ilin eğitim durumu hakkında bilgi arıyorum, İzmir nasıl?",
+    "expected_args": {
+      "province": "İzmir"
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Okuma yazma oranları hakkında bilgiye ihtiyacım var, İstanbul nasıl bir durumda?",
+    "expected_args": {
+      "province": "İstanbul"
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Türkiye'deki illerden birinin ortalama eğitim süresini öğrenmek istiyorum, Mardin uygun olur mu?",
+    "expected_args": {
+      "province": "Mardin"
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Ankara ekonomisi ve eğitim verilerini paylaşır mısınız?",
+    "expected_args": {
+      "province": "Ankara"
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "İstanbul için demografik ve eğitimle ilgili veriler istiyorum.",
+    "expected_args": {
+      "province": "İstanbul"
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Bana Diyarbakır'daki toplumsal bilgilerden bahseder misin? Özellikle eğitim ve nüfus.",
+    "expected_args": {
+      "province": "Diyarbakır"
+    }
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "category": "direct",
+    "prompt": "2020 ve 2025 arasındaki Türkiye nüfus değişimini öğrenmek istiyorum.",
+    "expected_args": {
+      "startYear": 2020,
+      "endYear": 2025
+    }
+  },
+  {
+    "category": "direct",
+    "prompt": "Get me the population data of Turkey from 2015 to 2020.",
+    "expected_args": {
+      "startYear": 2015,
+      "endYear": 2020
+    }
+  },
+  {
+    "category": "direct",
+    "prompt": "Türkiye'nin 2018-2022 arasındaki nüfus ölçümlerini verir misin?",
+    "expected_args": {
+      "startYear": 2018,
+      "endYear": 2022
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Son 5 yılda Türkiye'nin demografik değişimi nasıldı?",
+    "expected_args": {
+      "startYear": 2018,
+      "endYear": 2023
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Pandemi döneminde Türkiye'nin nüfus değişimi nasıl oldu?",
+    "expected_args": {
+      "startYear": 2020,
+      "endYear": 2022
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Türkiye'de son 10 yıldaki nüfus trendleri hakkında bilgi verir misiniz?",
+    "expected_args": {
+      "startYear": 2013,
+      "endYear": 2023
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Geçmiş yıllarda Türkiye'deki nüfus artışını görebilir miyim?",
+    "expected_args": {
+      "startYear": 2010,
+      "endYear": 2020
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Türkiye'nin 2020 sonrası demografik eğilimleri nedir?",
+    "expected_args": {
+      "startYear": 2020,
+      "endYear": 2023
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Ülkenin son yıllardaki büyüme istatistiklerini raporla.",
+    "expected_args": {
+      "startYear": 2018,
+      "endYear": 2023
+    }
+  }
+]

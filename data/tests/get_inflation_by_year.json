@@ -1,0 +1,11 @@
+[
+  {"category":"direct","prompt":"2023 yılı için Türkiye'nin aylık enflasyon verilerini almak istiyorum.","expected_args":{"year":2023}},
+  {"category":"direct","prompt":"Can you provide the inflation data for the year 2021 in Turkey?","expected_args":{"year":2021}},
+  {"category":"direct","prompt":"2025 yılındaki tüm aylık enflasyon verilerine ihtiyacım var.","expected_args":{"year":2025}},
+  {"category":"indirect","prompt":"Geçen yılın ekonomik trendlerini inceliyorum, aylık enflasyon verilerine nasıl ulaşabilirim?","expected_args":{"year":2022}},
+  {"category":"indirect","prompt":"I'm doing a research project on inflation trends for the past few years. How can I find monthly inflation data for 2020 in Turkey?","expected_args":{"year":2020}},
+  {"category":"indirect","prompt":"Ekonomik raporum için 2024 yılı boyunca enflasyon nasıl değişti, bilmem gerekiyor.","expected_args":{"year":2024}},
+  {"category":"adversarial","prompt":"Türkiye'de enflasyonun yıllık değişim oranlarına bakmak istiyorum, 2022 yılı için ne yapabilirim?","expected_args":{"year":2022}},
+  {"category":"adversarial","prompt":"Merak ediyorum, hangi araçla 2023 yılı için Türkiye'deki enflasyon oranlarını aylık bazda kontrol edebilirim?","expected_args":{"year":2023}},
+  {"category":"adversarial","prompt":"Türkiye'nin 2021 yılı enflasyon oranları hakkında bilgi verebilir misin? Aylık detayları istiyorum.","expected_args":{"year":2021}}
+]

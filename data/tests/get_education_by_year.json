@@ -1,0 +1,65 @@
+[
+  {
+    "category": "direct",
+    "prompt": "2023 yılı için tüm illerin eğitim istatistiklerini verir misiniz?",
+    "expected_args": {
+      "year": 2023
+    }
+  },
+  {
+    "category": "direct",
+    "prompt": "Bu yılın eğitim verilerini alabilir miyim? Özellikle iller düzeyinde olanları.",
+    "expected_args": {
+      "year": 2023
+    }
+  },
+  {
+    "category": "direct",
+    "prompt": "Lütfen 2022 yılındaki iller arası eğitim seviyesini göster.",
+    "expected_args": {
+      "year": 2022
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Eğitimdeki yıllık değişimleri anlamak istiyorum. Geçen yılın verileri var mı?",
+    "expected_args": {
+      "year": 2022
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Türkiye'deki illerin eğitim seviyelerini karşılaştırmak istiyorum. En son hangi yılın verileri mevcut?",
+    "expected_args": {
+      "year": 2023
+    }
+  },
+  {
+    "category": "indirect",
+    "prompt": "Bu yıl için iller arasında eğitim farklarını analiz etmek istiyorum. Hangi verilere bakabilirim?",
+    "expected_args": {
+      "year": 2023
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Geçmiş yılların eğitim verileri hakkında bilgi verir misiniz?",
+    "expected_args": {
+      "year": 2022
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "İllerin eğitim durumunu nasıl karşılaştırabilirim? 2025 yılı için bir şeyler var mı?",
+    "expected_args": {
+      "year": 2025
+    }
+  },
+  {
+    "category": "adversarial",
+    "prompt": "Bana bir yıl seç ve o yılın eğitim istatistiklerini göster.",
+    "expected_args": {
+      "year": 2023
+    }
+  }
+]

@@ -1,0 +1,288 @@
+[
+  {
+    "name": "get_latest_inflation",
+    "description": "Türkiye'nin en güncel enflasyon (TÜFE) verilerini getirir. En son açıklanan dönemin aylık değişim, yıllık değişim ve tüketici fiyat endeksini içerir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "get_education_by_province",
+    "description": "Belirtilen ilin eğitim istatistiklerini getirir. Okuryazarlık oranı, lise/üniversite mezun oranları, okuma yazma bilmeyen sayısı ve ortalama eğitim süresi bilgilerini içerir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "province": {
+          "description": "İl adı (örn: İstanbul, Ankara, Diyarbakır, Şanlıurfa)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "province"
+      ]
+    }
+  },
+  {
+    "name": "get_population_by_province",
+    "description": "Belirtilen ilin nüfus verilerini getirir. İl adı Türkçe olarak verilmelidir (örn: İstanbul, Ankara, İzmir).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "province": {
+          "description": "İl adı (örn: İstanbul, Ankara, İzmir)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "province"
+      ]
+    }
+  },
+  {
+    "name": "get_latest_unemployment",
+    "description": "Türkiye'nin en güncel işsizlik verilerini getirir. En son açıklanan dönemin işsizlik oranı, genç işsizlik oranı ve diğer göstergeleri içerir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "compare_province_unemployment_education",
+    "description": "Bir ilin işsizlik ve eğitim verilerini bir arada getirir. İşsizlik ile eğitim seviyesi arasındaki ilişkiyi analiz etmek için kullanılır.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "province": {
+          "description": "İl adı (örn: Şanlıurfa, Diyarbakır, Ankara)",
+          "type": "string"
+        },
+        "year": {
+          "description": "Karşılaştırma yılı (örn: 2023)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "province",
+        "year"
+      ]
+    }
+  },
+  {
+    "name": "get_inflation_by_period",
+    "description": "Türkiye'nin belirtilen yıl ve aya ait enflasyon (TÜFE) verilerini getirir. Aylık değişim, yıllık değişim, 12 aylık ortalama ve tüketici fiyat endeksini içerir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Enflasyon verisinin istenen yılı (örn: 2024)",
+          "type": "integer"
+        },
+        "month": {
+          "description": "Enflasyon verisinin istenen ayı (1-12 arası, örn: 6)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year",
+        "month"
+      ]
+    }
+  },
+  {
+    "name": "get_education_comparison",
+    "description": "İki il arasında eğitim seviyesi karşılaştırması yapar. Belirtilen yılda iki ilin okuryazarlık, lise, üniversite oranlarını yan yana gösterir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "province1": {
+          "description": "Birinci il adı (örn: Ankara)",
+          "type": "string"
+        },
+        "province2": {
+          "description": "İkinci il adı (örn: Şanlıurfa)",
+          "type": "string"
+        },
+        "year": {
+          "description": "Karşılaştırma yılı (örn: 2023)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "province1",
+        "province2",
+        "year"
+      ]
+    }
+  },
+  {
+    "name": "get_education_by_year",
+    "description": "Belirtilen yıla ait tüm illerin eğitim istatistiklerini getirir. İller arası eğitim seviyesi karşılaştırması için kullanılır.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Eğitim verilerinin istenen yılı (örn: 2023)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year"
+      ]
+    }
+  },
+  {
+    "name": "get_unemployment_by_period",
+    "description": "Türkiye'nin belirtilen yıl ve aya ait işsizlik verilerini getirir. İşsizlik oranı, genç işsizlik oranı, işgücüne katılma oranı ve istihdam oranını içerir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "İşsizlik verisinin istenen yılı (örn: 2024)",
+          "type": "integer"
+        },
+        "month": {
+          "description": "İşsizlik verisinin istenen ayı (1-12 arası, örn: 6)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year",
+        "month"
+      ]
+    }
+  },
+  {
+    "name": "get_inflation_by_year",
+    "description": "Türkiye'nin belirtilen yıla ait tüm aylık enflasyon (TÜFE) verilerini getirir. Yıl içindeki enflasyon trendini görmek için kullanılır.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Enflasyon verilerinin istenen yılı (örn: 2024)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year"
+      ]
+    }
+  },
+  {
+    "name": "get_province_unemployment_ranking",
+    "description": "Belirtilen yılda işsizlik oranı en yüksek illerin sıralamasını getirir. Hangi illerde işsizliğin en ciddi olduğunu görmek için kullanılır.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Sıralamanın istenen yılı (örn: 2023)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year"
+      ]
+    }
+  },
+  {
+    "name": "get_province_unemployment",
+    "description": "Belirtilen ilin işsizlik verilerini yıllara göre getirir. İşsizlik oranı, genç işsizlik, işgücüne katılım, istihdam oranı ve işsiz sayısını içerir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "province": {
+          "description": "İl adı (örn: İstanbul, Diyarbakır, Şanlıurfa, Van)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "province"
+      ]
+    }
+  },
+  {
+    "name": "get_education_ranking",
+    "description": "Belirtilen yılda illerin üniversite mezun oranına göre sıralamasını getirir. Eğitim seviyesi en yüksek ve en düşük illeri görmek için kullanılır.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Sıralamanın istenen yılı (örn: 2023)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year"
+      ]
+    }
+  },
+  {
+    "name": "get_population_by_year_range",
+    "description": "Türkiye'nin belirtilen yıl aralığındaki nüfus verilerini getirir. Nüfus değişim trendini görmek için kullanılır.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "startYear": {
+          "description": "Başlangıç yılı (örn: 2018)",
+          "type": "integer"
+        },
+        "endYear": {
+          "description": "Bitiş yılı (örn: 2023)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "startYear",
+        "endYear"
+      ]
+    }
+  },
+  {
+    "name": "get_population_by_year",
+    "description": "Türkiye'nin belirtilen yıla ait nüfus verilerini getirir. Toplam nüfus, erkek/kadın nüfusu ve yıllık nüfus artış hızını içerir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Nüfus verisinin istenen yılı (örn: 2023)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year"
+      ]
+    }
+  },
+  {
+    "name": "get_province_unemployment_by_year",
+    "description": "Belirtilen yılda tüm illerin işsizlik verilerini getirir. İller arası işsizlik karşılaştırması için kullanılır. İşsizlik oranına göre sıralı gelir.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "İşsizlik verilerinin istenen yılı (örn: 2023)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year"
+      ]
+    }
+  },
+  {
+    "name": "get_unemployment_by_year",
+    "description": "Türkiye'nin belirtilen yıla ait tüm aylık işsizlik verilerini getirir. Yıl içindeki işsizlik trendini görmek için kullanılır.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "İşsizlik verilerinin istenen yılı (örn: 2024)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year"
+      ]
+    }
+  }
+]
