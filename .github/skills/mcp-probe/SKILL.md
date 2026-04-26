@@ -1,5 +1,7 @@
 ---
-description: Evaluate MCP tool selection quality. Tests how well an LLM picks the right tool from natural-language prompts and suggests description improvements.
+name: mcp-probe
+description: "MCP server'daki tool description'larını test eder. LLM'in doğru tool'u seçip seçmediğini ölçer ve description iyileştirmeleri önerir. Tetikleyiciler: 'MCP tool'larımı test et', 'tool seçim doğruluğunu ölç', 'description'larımı değerlendir', 'hangi prompt hangi tool'u tetikliyor'."
+argument-hint: "MCP server URL (örn. http://localhost:3000/mcp)"
 ---
 
 # MCP Tool Eval
