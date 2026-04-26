@@ -213,5 +213,125 @@ async function score() {
   const path = join(DATA, 'report.md');
   await writeFile(path, lines.join('\n'));
   console.log(`→ ${path}`);
+
+  const htmlPath = join(DATA, 'report.html');
+  await writeFile(htmlPath, buildHtml(runs, tools, totalCorrect, pct));
+  console.log(`→ ${htmlPath}`);
   console.log(`Overall: ${totalCorrect}/${runs.length} (%${pct})`);
+}
+
+function scoreColor(pct: number) {
+  if (pct >= 80) return '#22c55e';
+  if (pct >= 60) return '#f59e0b';
+  return '#ef4444';
+}
+
+function buildHtml(
+  runs: RunResult[],
+  tools: ToolEntry[],
+  totalCorrect: number,
+  pct: number,
+): string {
+  const generated = new Date().toLocaleString('tr-TR');
+  const model     = process.env['LLM_MODEL'] ?? 'unknown model';
+
+  const toolCards = [...groupBy(runs, r => r.tool)].map(([name, items]) => {
+    const correct  = items.filter(r => r.actual_tool === r.tool).length;
+    const failures = items.filter(r => r.actual_tool !== r.tool);
+    const acc      = Math.round((correct / items.length) * 100);
+    const color    = scoreColor(acc);
+
+    const catRows = [...groupBy(items, r => r.category)].map(([cat, catItems]) => {
+      const c    = catItems.filter(r => r.actual_tool === r.tool).length;
+      const catP = Math.round((c / catItems.length) * 100);
+      return `<div class="cat-row">
+        <span class="cat-label">${cat}</span>
+        <div class="bar-wrap"><div class="bar" style="width:${catP}%;background:${scoreColor(catP)}"></div></div>
+        <span class="cat-score">${c}/${catItems.length}</span>
+      </div>`;
+    }).join('');
+
+    const confMap = new Map<string, number>();
+    for (const f of failures) if (f.actual_tool) confMap.set(f.actual_tool, (confMap.get(f.actual_tool) ?? 0) + 1);
+    const confRows = [...confMap.entries()].sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => `<span class="tag">→ <code>${k}</code> ×${v}</span>`).join(' ');
+
+    const failRows = failures.slice(0, 6)
+      .map(f => `<li>"${f.prompt}" <span class="got">→ ${f.actual_tool ?? '(none)'}</span></li>`).join('');
+
+    const toolNode = tools.find(t => t.name === name);
+    const descBox = toolNode
+      ? `<div class="desc">${toolNode.description}</div>`
+      : '';
+
+    return `<div class="card">
+      <div class="card-header">
+        <span class="tool-name"><code>${name}</code></span>
+        <span class="badge" style="background:${color}">${acc}%</span>
+      </div>
+      <div class="accuracy-bar">
+        <div class="accuracy-fill" style="width:${acc}%;background:${color}"></div>
+      </div>
+      ${descBox}
+      <div class="cats">${catRows}</div>
+      ${confRows ? `<div class="conf-section"><strong>Confused with:</strong><br>${confRows}</div>` : ''}
+      ${failRows ? `<div class="fail-section"><strong>Failed prompts:</strong><ul>${failRows}</ul></div>` : ''}
+    </div>`;
+  }).join('');
+
+  const overallColor = scoreColor(pct);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP Tool Eval Report</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:2rem 1rem}
+  a{color:#38bdf8}
+  .container{max-width:900px;margin:0 auto}
+  header{text-align:center;margin-bottom:3rem}
+  header h1{font-size:1.5rem;color:#94a3b8;font-weight:500;margin-bottom:1rem}
+  .overall{display:inline-block;font-size:5rem;font-weight:800;line-height:1;color:${overallColor}}
+  .overall-sub{font-size:1rem;color:#64748b;margin-top:.5rem}
+  .meta{margin-top:1rem;font-size:.85rem;color:#475569}
+  .grid{display:grid;gap:1.25rem}
+  .card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1.5rem}
+  .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+  .tool-name code{font-size:1rem;color:#e2e8f0;background:#0f172a;padding:.2rem .5rem;border-radius:6px}
+  .badge{font-size:.9rem;font-weight:700;padding:.3rem .75rem;border-radius:999px;color:#fff}
+  .accuracy-bar{height:6px;background:#334155;border-radius:3px;overflow:hidden;margin-bottom:1rem}
+  .accuracy-fill{height:100%;border-radius:3px;transition:width .3s}
+  .desc{font-size:.8rem;color:#64748b;margin-bottom:1rem;line-height:1.5;border-left:2px solid #334155;padding-left:.75rem}
+  .cats{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem}
+  .cat-row{display:flex;align-items:center;gap:.75rem;font-size:.82rem}
+  .cat-label{width:90px;color:#94a3b8;text-transform:capitalize}
+  .bar-wrap{flex:1;background:#0f172a;border-radius:3px;height:6px;overflow:hidden}
+  .bar{height:100%;border-radius:3px}
+  .cat-score{width:40px;text-align:right;color:#64748b;font-size:.8rem}
+  .conf-section{margin-top:.75rem;font-size:.82rem;color:#94a3b8}
+  .tag{display:inline-block;background:#0f172a;border:1px solid #334155;border-radius:6px;padding:.15rem .5rem;margin:.2rem .2rem 0 0;font-size:.78rem}
+  .tag code{color:#f472b6}
+  .fail-section{margin-top:.75rem;font-size:.82rem;color:#94a3b8}
+  .fail-section ul{margin-top:.4rem;padding-left:1.2rem;display:flex;flex-direction:column;gap:.3rem}
+  .fail-section li{color:#64748b}
+  .got{color:#f87171}
+  footer{text-align:center;margin-top:3rem;font-size:.8rem;color:#334155}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>MCP Tool Eval Report</h1>
+    <div class="overall">${pct}%</div>
+    <div class="overall-sub">${totalCorrect} / ${runs.length} correct selections</div>
+    <div class="meta">Model: <strong>${model}</strong> &nbsp;·&nbsp; ${generated}</div>
+  </header>
+  <div class="grid">${toolCards}</div>
+  <footer>generated by <a href="https://github.com/turkyilmazomer/mcp-probe">mcp-probe</a></footer>
+</div>
+</body>
+</html>`;
 }
