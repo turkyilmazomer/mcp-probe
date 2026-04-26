@@ -186,25 +186,23 @@ async function score() {
   const runs  = JSON.parse(await readFile(join(DATA, 'runs', 'latest.json'), 'utf8')) as RunResult[];
   const tools = JSON.parse(await readFile(join(DATA, 'tools.json'), 'utf8')) as ToolEntry[];
 
-  const lines: string[] = [];
-  const push = (...s: string[]) => lines.push(...s);
-
   const totalCorrect = runs.filter(r => r.actual_tool === r.tool).length;
   const pct = runs.length > 0 ? Math.round((totalCorrect / runs.length) * 100) : 0;
 
-  push('# MCP Tool Eval Report', `Generated: ${new Date().toLocaleString('tr-TR')}`, '');
-  push(`**Overall selection accuracy: ${totalCorrect}/${runs.length} (%${pct})**`, '');
+  // ── 1. build report without LLM suggestions ──────────────────────────────
+  const toolSections = new Map<string, string[]>();
 
   for (const [name, items] of groupBy(runs, r => r.tool)) {
     const correct  = items.filter(r => r.actual_tool === r.tool).length;
     const failures = items.filter(r => r.actual_tool !== r.tool);
     const acc      = Math.round((correct / items.length) * 100);
 
-    push(`## \`${name}\``, `Selection: **${correct}/${items.length}** (%${acc})`);
+    const lines: string[] = [];
+    lines.push(`## \`${name}\``, `Selection: **${correct}/${items.length}** (%${acc})`);
 
     for (const [cat, catItems] of groupBy(items, r => r.category)) {
       const c = catItems.filter(r => r.actual_tool === r.tool).length;
-      push(`- ${cat}: ${c}/${catItems.length}`);
+      lines.push(`- ${cat}: ${c}/${catItems.length}`);
     }
 
     if (failures.length > 0) {
@@ -214,39 +212,63 @@ async function score() {
 
       const confusion = [...confMap.entries()].sort((a, b) => b[1] - a[1]);
       if (confusion.length > 0) {
-        push('', 'Confused with:');
-        for (const [k, v] of confusion) push(`- \`${k}\` × ${v}`);
+        lines.push('', 'Confused with:');
+        for (const [k, v] of confusion) lines.push(`- \`${k}\` × ${v}`);
       }
 
-      push('', 'Failed prompts:');
+      lines.push('', 'Failed prompts:');
       for (const f of failures.slice(0, 8))
-        push(`- "${f.prompt}" → \`${f.actual_tool ?? '(none)'}\``);
-
-      const toolNode = tools.find(t => t.name === name);
-      if (toolNode) {
-        const failText = failures.slice(0, 10)
-          .map(f => `  "${f.prompt}" → got: ${f.actual_tool ?? 'none'}`).join('\n');
-        const sys2  = 'You analyze MCP tool description quality. Be concrete and brief. Suggest specific edits, not generic advice.';
-        const user2 = `Tool name: ${name}\nCurrent description: ${toolNode.description}\n\nThis tool was NOT selected (or wrong tool was selected) for these prompts:\n${failText}\n\nSuggest description amendments (additions/rewordings/disambiguators) that would help the model pick this tool. Use a short bulleted list. If the wrong tool was a similar one, suggest disambiguator phrasing like "use this for X, not for Y, use Z for Y".`;
-        try {
-          const suggestion = await llm.chat(sys2, user2, 0.3);
-          push('', '**Description suggestions:**', '', suggestion.trim());
-        } catch (e) {
-          push('', `*(suggestion failed: ${e instanceof Error ? e.message : e})*`);
-        }
-      }
+        lines.push(`- "${f.prompt}" → \`${f.actual_tool ?? '(none)'}\``);
     }
-    push('');
+
+    toolSections.set(name, lines);
   }
 
-  const path = join(DATA, 'report.md');
-  await writeFile(path, lines.join('\n'));
-  console.log(`→ ${path}`);
+  const writeReports = async (sections: Map<string, string[]>) => {
+    const header = [
+      '# MCP Tool Eval Report',
+      `Generated: ${new Date().toLocaleString('tr-TR')}`,
+      '',
+      `**Overall selection accuracy: ${totalCorrect}/${runs.length} (%${pct})**`,
+      '',
+    ];
+    const body = [...sections.values()].flatMap(l => [...l, '']);
+    await writeFile(join(DATA, 'report.md'), [...header, ...body].join('\n'));
+    await writeFile(join(DATA, 'report.html'), buildHtml(runs, tools, totalCorrect, pct));
+  };
 
-  const htmlPath = join(DATA, 'report.html');
-  await writeFile(htmlPath, buildHtml(runs, tools, totalCorrect, pct));
-  console.log(`→ ${htmlPath}`);
+  // ── 2. write reports immediately ─────────────────────────────────────────
+  await writeReports(toolSections);
+  console.log(`→ ${join(DATA, 'report.md')}`);
+  console.log(`→ ${join(DATA, 'report.html')}`);
   console.log(`Overall: ${totalCorrect}/${runs.length} (%${pct})`);
+
+  // ── 3. fetch LLM suggestions and append (non-blocking per tool) ──────────
+  console.log('Fetching description suggestions...');
+  for (const [name, items] of groupBy(runs, r => r.tool)) {
+    const failures = items.filter(r => r.actual_tool !== r.tool);
+    if (failures.length === 0) continue;
+
+    const toolNode = tools.find(t => t.name === name);
+    if (!toolNode) continue;
+
+    process.stdout.write(`  ${name}... `);
+    const failText = failures.slice(0, 10)
+      .map(f => `  "${f.prompt}" → got: ${f.actual_tool ?? 'none'}`).join('\n');
+    const sys2  = 'You analyze MCP tool description quality. Be concrete and brief. Suggest specific edits, not generic advice.';
+    const user2 = `Tool name: ${name}\nCurrent description: ${toolNode.description}\n\nThis tool was NOT selected (or wrong tool was selected) for these prompts:\n${failText}\n\nSuggest description amendments (additions/rewordings/disambiguators) that would help the model pick this tool. Use a short bulleted list. If the wrong tool was a similar one, suggest disambiguator phrasing like "use this for X, not for Y, use Z for Y".`;
+    try {
+      const suggestion = await llm.chat(sys2, user2, 0.3);
+      toolSections.get(name)?.push('', '**Description suggestions:**', '', suggestion.trim());
+      console.log('ok');
+    } catch (e) {
+      toolSections.get(name)?.push('', `*(suggestion failed: ${e instanceof Error ? e.message : e})*`);
+      console.log('failed');
+    }
+
+    // update reports after each suggestion so partial results are persisted
+    await writeReports(toolSections);
+  }
 }
 
 function scoreColor(pct: number) {
