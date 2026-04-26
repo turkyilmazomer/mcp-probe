@@ -6,7 +6,8 @@
     "discover": "tsx src/index.ts discover",
     "generate": "tsx src/index.ts generate",
     "run":      "tsx src/index.ts run",
-    "score":    "tsx src/index.ts score"
+    "score":    "tsx src/index.ts score",
+    "clean":    "tsx src/index.ts clean"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

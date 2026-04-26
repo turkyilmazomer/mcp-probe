@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync } from 'node:fs';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, rm, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { McpClient, type McpTool } from './mcp-client.js';
 import { LlmClient } from './llm-client.js';
@@ -46,12 +46,14 @@ try {
     case 'generate': await generate(Number(arg('--n') ?? '3')); break;
     case 'run':      await run(); break;
     case 'score':    await score(); break;
+    case 'clean':    await clean(); break;
     default:
       console.log('Usage:');
       console.log('  npx tsx src/index.ts discover --mcp <url>');
       console.log('  npx tsx src/index.ts generate [--n 3]');
       console.log('  npx tsx src/index.ts run --mcp <url>');
       console.log('  npx tsx src/index.ts score');
+      console.log('  npx tsx src/index.ts clean');
       console.log();
       console.log('Env vars: LLM_URL, LLM_MODEL, LLM_KEY (optional), MCP_URL');
   }
@@ -61,6 +63,33 @@ try {
 }
 
 // ──────────────── commands ────────────────
+
+async function clean() {
+  const targets = [
+    join(DATA, 'tools.json'),
+    join(DATA, 'report.md'),
+    join(DATA, 'report.html'),
+    join(DATA, 'runs', 'latest.json'),
+  ];
+
+  for (const f of targets) {
+    if (existsSync(f)) {
+      await rm(f);
+      console.log(`  deleted ${f}`);
+    }
+  }
+
+  const testsDir = join(DATA, 'tests');
+  if (existsSync(testsDir)) {
+    for (const file of await readdir(testsDir)) {
+      if (file === '.gitkeep') continue;
+      await rm(join(testsDir, file));
+      console.log(`  deleted ${join(testsDir, file)}`);
+    }
+  }
+
+  console.log('✓ data/ cleaned');
+}
 
 async function discover() {
   const mcp = new McpClient(mcpUrl());
